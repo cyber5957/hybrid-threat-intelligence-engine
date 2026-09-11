@@ -14,6 +14,10 @@ def extract_iocs(text):
                 unique.append(item)
         for u in unique:
             print(f"{label}: {u}")
+    if not o:
+            print("NO HASH")
+    else:
+         print("hash value: ", o)
    
         
 
