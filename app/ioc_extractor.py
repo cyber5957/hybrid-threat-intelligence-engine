@@ -2,16 +2,23 @@ import re
 
 def extract_iocs(text):
     m = re.findall(r'[\w,-]+://[\w.,-]+',text)
-    print("URL: ",m[0])
-
     n = re.findall(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', text)
-    print("ip address: ",n[0])
-
     o = re.findall(r'[a-fA-F0-9]{32}',text)
-    print( "hash value: ", o[0])
 
-text = """User clicked http://secure-login-update.com from IP 185.220.101.45.
-File hash observed: d41d8cd98f00b204e9800998ecf8427e"""
+    for label, items in [("URL", m), ("IP", n), ("Hash", o)]:
+        seen = set()
+        unique = []
+        for item in items:
+            if item not in seen:
+                seen.add(item)
+                unique.append(item)
+        for u in unique:
+            print(f"{label}: {u}")
+   
+        
+
+text = """""Alert: User clicked http://secure-login-update.com from IP 185.220.101.45.
+Firewall: blocked 185.220.101.45 outbound."""
 
 extract_iocs(text)
 
