@@ -1,6 +1,7 @@
 import re
 from urllib.parse import urlparse
 import json
+from pathlib import Path
 
 # Regex patterns with proper escaping
 URL_RE = re.compile(r'https?://[^\s<>"\)\]]+')
@@ -49,8 +50,7 @@ def extract_iocs(text):
 
 # ─── Main Execution ───────────────────────────────────────────────
 
-text = """Alert: User clicked https://secure-login-update.com/login
-from IP 185.220.101.45. Hash: d41d8cd98f00b204e9800998ecf8427e"""
+text = """User logged in successfully from the office network."""
 
 results = extract_iocs(text)
 
@@ -60,13 +60,16 @@ print("PRETTY JSON OUTPUT:")
 print("=" * 50)
 print(json.dumps(results, indent=2))
 
-# 2. Save to a JSON file (for later use / FastAPI testing)
-with open("ioc_results.json", "w") as f:
+# 2. Save to one stable JSON file (for later use / FastAPI testing)
+results_path = Path(__file__).resolve().parent.parent / "data" / "processed" / "ioc_results.json"
+results_path.parent.mkdir(parents=True, exist_ok=True)
+
+with open(results_path, "w") as f:
     json.dump(results, f, indent=2)
-print("\n✅ Results saved to 'ioc_results.json'")
+print(f"\nResults saved to '{results_path}'")
 
 # 3. Read the JSON back (simulating another script/file reading it)
-with open("ioc_results.json", "r") as f:
+with open(results_path, "r") as f:
     loaded = json.load(f)
 
 print("\n" + "=" * 50)

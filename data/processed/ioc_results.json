@@ -1,14 +1,6 @@
 {
-  "URLs": [
-    "https://secure-login-update.com/login"
-  ],
-  "IPs": [
-    "185.220.101.45"
-  ],
-  "Domains": [
-    "secure-login-update.com"
-  ],
-  "Hashes": [
-    "d41d8cd98f00b204e9800998ecf8427e"
-  ]
+  "URLs": [],
+  "IPs": [],
+  "Domains": [],
+  "Hashes": []
 }
