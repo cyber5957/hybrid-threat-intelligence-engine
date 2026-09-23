@@ -15,7 +15,7 @@ def domain_extractor(extractor):
         if not tld.isdigit():
             print("valid")
         else:
-            reject 
+            pass
 
 
 
