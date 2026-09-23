@@ -9,21 +9,37 @@ def ip_validation(ip_address):
     remove_duplicates = list(dict.fromkeys(valid_ips))
     return remove_duplicates
 
+def domain_extractor(extractor):
+    for domain in extractor:
+        tld = domain.split(".")[-1]
+        if not tld.isdigit():
+            print("valid")
+        else:
+            reject 
+
+
 
         
 alert = """
-Connection from 192.168.0.1 detected.
-Connection from 192.168.1.20 detected.
-Connection from 185.220.101.5 detected again.
-Connection from 10.10.10.45 detected.
-Connection from 192.168.1.20 detected again.
+google.com
+evil-example.com
+login.evil-example.com
+192.168.1.20
+hello
+example.
 """
        
-pattern = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
+#pattern = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
+
+domain_regrex = r"\b[a-zA-Z0-9-]+(?:\.[[a-zA-Z0-9-]+)+\b"
+
+extractor = re.findall(domain_regrex, alert)
+domain_extractor(extractor)
 
 
-ip_address = re.findall(pattern, alert)
 
-clean_ips = ip_validation(ip_address)
+"""ip_address = re.findall(pattern, alert)
+
+clean_ips = ip_validation(ip_address)"""
 
 
