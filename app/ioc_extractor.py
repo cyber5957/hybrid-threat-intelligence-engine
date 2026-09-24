@@ -22,15 +22,27 @@ def ip_validation(ip_addresses: list[str]) -> list[str]:
 
 def domain_extractor(domains: list[str]) -> list[str]:
     """Return domain-like values and exclude IPv4 addresses."""
-    return [domain for domain in domains if not domain.rsplit(".", 1)[-1].isdigit()]
+    valid_domains = []
+    for domain in domains:
+        has_invalid_label = False
+        for label in domain.split("."):
+            if label.startswith("-") or label.endswith("-"):
+                has_invalid_label = True
+                break
+
+        if has_invalid_label or domain.rsplit(".", 1)[-1].isdigit():
+            continue
+
+        valid_domains.append(domain)
+
+    return valid_domains
 
 
 if __name__ == "__main__":
-    alert ="""hello.world
-example.123
-test.
--evil.com
-evil-.com"""
+    alert ="""Source IP: 185.220.101.5
+Connected to evil-example.com
+Destination: 192.168.1.20
+Visited login.evil-example.com"""
 
     extracted_domains = re.findall(DOMAIN_PATTERN, alert)
     print(domain_extractor(extracted_domains))
