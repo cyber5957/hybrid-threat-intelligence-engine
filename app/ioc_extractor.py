@@ -21,7 +21,7 @@ def ip_validation(ip_addresses: list[str]) -> list[str]:
 
 
 def domain_extractor(domains: list[str]) -> list[str]:
-    """Return domain-like values and exclude IPv4 addresses."""
+    """Return domain-like values and exclude invalid labels and IPv4 addresses."""
     valid_domains = []
     for domain in domains:
         has_invalid_label = False
@@ -49,7 +49,6 @@ def extract_iocs(alert: str) -> dict[str, list[str]]:
     }
 
 
-
 if __name__ == "__main__":
     alert = """Source IP: 185.220.101.5
 Connected to evil-example.com
@@ -57,5 +56,3 @@ Destination: 192.168.1.20
 Visited login.evil-example.com"""
 
     print(extract_iocs(alert))
-
-
