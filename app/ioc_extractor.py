@@ -1,45 +1,38 @@
 import re
 
-def ip_validation(ip_address):
+
+IP_PATTERN = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
+DOMAIN_PATTERN = r"\b[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+\b"
+
+
+def ip_validation(ip_addresses: list[str]) -> list[str]:
+    """Return unique IPv4 addresses with valid octets."""
     valid_ips = []
-    for ip in ip_address:
-        int_list = [int(x) for x in ip.split(".")]
-        if len(int_list) == 4 and all(0 <= value <= 255 for value in int_list):
-            valid_ips.append(ip)
-    remove_duplicates = list(dict.fromkeys(valid_ips))
-    return remove_duplicates
+    for ip_address in ip_addresses:
+        try:
+            octets = [int(value) for value in ip_address.split(".")]
+        except ValueError:
+            continue
 
-def domain_extractor(extractor):
-    for domain in extractor:
-        tld = domain.split(".")[-1]
-        if not tld.isdigit():
-            print("valid")
-        else:
-            pass
+        if len(octets) == 4 and all(0 <= value <= 255 for value in octets):
+            valid_ips.append(ip_address)
+
+    return list(dict.fromkeys(valid_ips))
 
 
-
-        
-alert = """
-google.com
-evil-example.com
-login.evil-example.com
-192.168.1.20
-hello
-example.
-"""
-       
-#pattern = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
-
-domain_regrex = r"\b[a-zA-Z0-9-]+(?:\.[[a-zA-Z0-9-]+)+\b"
-
-extractor = re.findall(domain_regrex, alert)
-domain_extractor(extractor)
+def domain_extractor(domains: list[str]) -> list[str]:
+    """Return domain-like values and exclude IPv4 addresses."""
+    return [domain for domain in domains if not domain.rsplit(".", 1)[-1].isdigit()]
 
 
+if __name__ == "__main__":
+    alert ="""hello.world
+example.123
+test.
+-evil.com
+evil-.com"""
 
-"""ip_address = re.findall(pattern, alert)
-
-clean_ips = ip_validation(ip_address)"""
+    extracted_domains = re.findall(DOMAIN_PATTERN, alert)
+    print(domain_extractor(extracted_domains))
 
 
