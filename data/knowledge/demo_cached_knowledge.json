@@ -1,0 +1,62 @@
+{
+  "192.0.2.25": {
+    "ioc": "192.0.2.25",
+    "ioc_type": "ip",
+    "current_verdict": "unknown",
+    "confidence": "none",
+    "first_seen": "2026-09-26T14:30:00",
+    "last_seen": "2026-09-27T02:17:05.262817",
+    "tags": [],
+    "evidence": []
+  },
+  "198.51.100.42": {
+    "ioc": "198.51.100.42",
+    "ioc_type": "ip",
+    "current_verdict": "unknown",
+    "confidence": "none",
+    "first_seen": "2026-09-26T14:30:00",
+    "last_seen": "2026-09-27T02:17:05.262817",
+    "tags": [],
+    "evidence": []
+  },
+  "192.168.10.25": {
+    "ioc": "192.168.10.25",
+    "ioc_type": "ip",
+    "current_verdict": "unknown",
+    "confidence": "none",
+    "first_seen": "2026-09-26T14:30:00",
+    "last_seen": "2026-09-27T02:17:05.262817",
+    "tags": [],
+    "evidence": []
+  },
+  "203.0.113.77": {
+    "ioc": "203.0.113.77",
+    "ioc_type": "ip",
+    "current_verdict": "unknown",
+    "confidence": "none",
+    "first_seen": "2026-09-26T14:30:00",
+    "last_seen": "2026-09-27T02:17:05.262817",
+    "tags": [],
+    "evidence": []
+  },
+  "login-demo.example.com": {
+    "ioc": "login-demo.example.com",
+    "ioc_type": "domain",
+    "current_verdict": "unknown",
+    "confidence": "none",
+    "first_seen": "2026-09-26T14:30:00",
+    "last_seen": "2026-09-27T02:17:05.262817",
+    "tags": [],
+    "evidence": []
+  },
+  "cdn-update.example.net": {
+    "ioc": "cdn-update.example.net",
+    "ioc_type": "domain",
+    "current_verdict": "unknown",
+    "confidence": "none",
+    "first_seen": "2026-09-26T14:30:00",
+    "last_seen": "2026-09-27T02:17:05.262817",
+    "tags": [],
+    "evidence": []
+  }
+}
