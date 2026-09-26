@@ -1,4 +1,6 @@
+import json
 import re
+from pathlib import Path
 
 
 IP_PATTERN = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
@@ -42,11 +44,19 @@ def extract_iocs(alert: str) -> dict[str, list[str]]:
     """Extract and validate IP and domain indicators from an alert."""
     ip_candidates = re.findall(IP_PATTERN, alert)
     domain_candidates = re.findall(DOMAIN_PATTERN, alert)
-
-    return {
-        "ips": ip_validation(ip_candidates),
-        "domains": domain_extractor(domain_candidates),
+    results = {
+        "URLs": [],
+        "IPs": ip_validation(ip_candidates),
+        "Domains": domain_extractor(domain_candidates),
+        "Hashes": [],
     }
+
+    output_path = Path(__file__).resolve().parent.parent / "data" / "processed" / "ioc_results.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as result_file:
+        json.dump(results, result_file, indent=2)
+
+    return results
 
 
 if __name__ == "__main__":

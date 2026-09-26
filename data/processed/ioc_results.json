@@ -1,6 +1,10 @@
 {
   "URLs": [],
-  "IPs": [],
-  "Domains": [],
+  "IPs": [
+    "185.220.101.5"
+  ],
+  "Domains": [
+    "evil-example.com"
+  ],
   "Hashes": []
 }
