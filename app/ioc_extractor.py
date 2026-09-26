@@ -1,10 +1,14 @@
 import json
 import re
+import runpy
 from pathlib import Path
 
 
 IP_PATTERN = r"\b\d{1,3}(?:\.\d{1,3}){3}\b"
 DOMAIN_PATTERN = r"\b[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+\b"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+RESULTS_PATH = PROJECT_ROOT / "data" / "processed" / "ioc_results.json"
+DEMO_DATA_PATH = PROJECT_ROOT / "scripts" / "seed_demo_data.py"
 
 
 def ip_validation(ip_addresses: list[str]) -> list[str]:
@@ -26,13 +30,13 @@ def domain_extractor(domains: list[str]) -> list[str]:
     """Return domain-like values and exclude invalid labels and IPv4 addresses."""
     valid_domains = []
     for domain in domains:
-        has_invalid_label = False
-        for label in domain.split("."):
-            if label.startswith("-") or label.endswith("-"):
-                has_invalid_label = True
-                break
+        has_invalid_label = any(
+            label.startswith("-") or label.endswith("-")
+            for label in domain.split(".")
+        )
+        has_numeric_suffix = domain.rsplit(".", 1)[-1].isdigit()
 
-        if has_invalid_label or domain.rsplit(".", 1)[-1].isdigit():
+        if has_invalid_label or has_numeric_suffix:
             continue
 
         valid_domains.append(domain)
@@ -51,18 +55,19 @@ def extract_iocs(alert: str) -> dict[str, list[str]]:
         "Hashes": [],
     }
 
-    output_path = Path(__file__).resolve().parent.parent / "data" / "processed" / "ioc_results.json"
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with output_path.open("w", encoding="utf-8") as result_file:
+    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with RESULTS_PATH.open("w", encoding="utf-8") as result_file:
         json.dump(results, result_file, indent=2)
 
     return results
 
 
-if __name__ == "__main__":
-    alert = """Source IP: 185.220.101.5
-Connected to evil-example.com
-Destination: 192.168.1.20
-Visited login.evil-example.com"""
+def main() -> None:
+    """Runing the extractor against the bundled demo alert."""
+    demo_data = runpy.run_path(str(DEMO_DATA_PATH))
+    alert_description = demo_data["demo_alert"]["description"]
+    print(extract_iocs(alert_description))
 
-    print(extract_iocs(alert))
+
+if __name__ == "__main__":
+    main()

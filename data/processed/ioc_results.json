@@ -1,10 +1,14 @@
 {
   "URLs": [],
   "IPs": [
-    "185.220.101.5"
+    "192.0.2.25",
+    "198.51.100.42",
+    "192.168.10.25",
+    "203.0.113.77"
   ],
   "Domains": [
-    "evil-example.com"
+    "login-demo.example.com",
+    "cdn-update.example.net"
   ],
   "Hashes": []
 }
