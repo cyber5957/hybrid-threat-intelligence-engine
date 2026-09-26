@@ -1,105 +1,140 @@
-# Hybrid ML + LLM Threat Intelligence Engine
+# Hybrid Threat Intelligence Engine
 
-A final-year cybersecurity project that helps SOC analysts investigate suspicious alerts and threat reports.
+A Python project for extracting indicators of compromise (IOCs) from security alert text and maintaining a small, structured knowledge cache. The current demo focuses on IP addresses and domain-like indicators, using synthetic alert data reserved for documentation and testing.
 
-The system extracts Indicators of Compromise (IOCs), such as IP addresses, URLs, domains, and file hashes. It then combines SOC detection rules, machine-learning risk scoring, and trusted threat-intelligence context to produce a clear analyst-friendly risk assessment.
+> **Project status:** Early development. The IOC extraction and knowledge-cache scripts are implemented; risk scoring, machine learning, enrichment APIs, and analyst interfaces are not yet implemented.
 
-## Project Objective
+## Contents
 
-Security teams receive large numbers of alerts every day. Manually reviewing every indicator is slow and can lead to missed threats.
+- [What It Does](#what-it-does)
+- [Quick Start](#quick-start)
+- [Run the Demo](#run-the-demo)
+- [Data and Output](#data-and-output)
+- [Project Layout](#project-layout)
+- [Current Scope](#current-scope)
+- [Roadmap](#roadmap)
+- [Security Scope](#security-scope)
 
-This project aims to support a SOC analyst by:
+## What It Does
 
-- Extracting IOCs from alert text and threat reports
-- Identifying suspicious indicators
-- Calculating a Low, Medium, or High risk level
-- Using a machine-learning model to improve risk prediction
-- Providing source-grounded AI-assisted explanations
-- Recommending safe next actions for investigation and incident response
+The demo workflow has two steps:
 
-The system supports human analysts. It does not automatically block systems or make final security decisions.
+1. Extract candidate IP addresses and domains from the demo alert, validate them, and save the results as JSON.
+2. Load those indicators into a Pydantic-validated knowledge cache, marking existing indicators as known and adding new ones.
 
-## Planned Features
+The scripts support investigation workflows; they do not determine whether an indicator is malicious or take response actions.
 
-- IOC extraction for URLs, IP addresses, domains, and file hashes
-- Rule-based SOC risk scoring
-- ML-based malicious indicator classification
-- Combined risk score and confidence level
-- Trusted threat-intelligence knowledge base
-- Grounded LLM explanation of findings
-- FastAPI backend
-- Streamlit analyst dashboard
-- Audit logging and input validation
+## Quick Start
 
-## Architecture
+Requirements: Python 3.9 or newer and `pip`.
 
-```text
-Alert Text or IOC Input
-          ↓
-IOC Extraction
-          ↓
-SOC Rules + ML Risk Prediction
-          ↓
-Combined Risk Score
-          ↓
-Threat Knowledge Retrieval
-          ↓
-Grounded AI Explanation
-          ↓
-SOC Analyst Dashboard
+Create and activate a virtual environment from the project root:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-## Technology Stack
+On macOS or Linux, activate it with:
 
-- Python
-- FastAPI
-- Uvicorn
-- Pandas
-- Scikit-learn
-- Streamlit
-- XGBoost or Random Forest
-- JSON / CSV datasets
-- Git and GitHub
-
-## Project Structure
-
-```text
-app/        Main application modules
-data/       Raw, processed, and threat-intelligence data
-models/     Saved machine-learning models
-tests/      Automated tests
-docs/       Architecture, API, and threat-model documentation
-scripts/    Training and demo-data helper scripts
-logs/       Safe audit logs for the application
+```bash
+source .venv/bin/activate
 ```
 
-## Current Development Status
+Install the project dependency:
 
-The project repository, Python environment, GitHub version control, and folder structure have been created.
+```bash
+python -m pip install -r requirements.txt
+```
 
-Next development milestone: build the IOC extraction module.
+The current dependency list contains Pydantic. The knowledge-base models use Pydantic v2 APIs.
 
-## Security and Ethical Scope
+## Run the Demo
 
-This is a defensive cybersecurity project.
+Run these commands from the repository root:
 
-- It uses safe datasets and simulated alert data.
-- It does not scan systems without authorization.
-- It does not execute malware or exploit vulnerabilities.
-- API keys and secrets are stored locally in `.env` and are not uploaded to GitHub.
-- AI-generated explanations must be based on trusted retrieved information and should clearly state uncertainty when evidence is insufficient.
+```bash
+python app/ioc_extractor.py
+python app/knowledge_base.py
+```
 
-## Team
+The first command loads `demo_alert` from `scripts/seed_demo_data.py`, extracts indicators from its description, prints the result, and writes `data/processed/ioc_results.json`. The second command reads that JSON, updates or creates records, and saves the cache to `data/knowledge/demo_cached_knowledge.json`.
 
-- Team Member 1 - Project integration, backend, and SOC workflow
-- Team Member 2 - Dataset preparation, testing, and ML evaluation
-- Team Member 3 - Dashboard, documentation, and knowledge-base support
+The extractor can also be imported and called with alert text:
 
-## Future Scope
+```python
+from app.ioc_extractor import extract_iocs
 
-- STIX/TAXII threat-feed integration
-- Live threat-intelligence enrichment
-- Docker deployment
-- SIEM integration
-- Analyst feedback loop for model improvement
-- Role-based access control
+results = extract_iocs("Suspicious connection to 198.51.100.42 at login.example.com")
+```
+
+Each extraction replaces the contents of `ioc_results.json` with the latest result.
+
+## Data and Output
+
+The extraction result has four keys to keep a consistent JSON shape:
+
+```json
+{
+    "URLs": [],
+    "IPs": ["198.51.100.42"],
+    "Domains": ["login.example.com"],
+    "Hashes": []
+}
+```
+
+At present, only IP and domain extraction is implemented; `URLs` and `Hashes` are empty placeholders. The knowledge cache stores each indicator with its type, verdict, confidence, first- and last-seen timestamps, tags, and evidence. New records currently begin with an `unknown` verdict and `none` confidence.
+
+The included demo uses synthetic indicators and `.example` domains. It is not a live threat feed and does not make a security verdict.
+
+## Project Layout
+
+```text
+app/
+    ioc_extractor.py       Extract and validate IP/domain indicators
+    knowledge_base.py      Update the Pydantic-backed IOC cache
+    schemas.py             Evidence model prototype
+    config.py              Reserved for application configuration
+    main.py                Reserved for an application entry point
+    ml_model.py            Planned machine-learning component
+    risk_rules.py          Planned rule-based scoring component
+    llm_explainer.py       Planned explanation component
+data/
+    knowledge/             Cached IOC knowledge
+    processed/             Extracted IOC results
+    raw/                   Reserved for source data
+scripts/
+    seed_demo_data.py      Synthetic demo alert
+    train_model.py         Reserved for model training
+docs/                    Architecture, API, and threat-model docs
+tests/                   Test package structure; automated tests are not yet present
+models/                  Reserved for model artifacts
+logs/                    Reserved for application logs
+```
+
+## Current Scope
+
+| Capability | Status |
+| --- | --- |
+| Extract IPv4 candidates and validate octets | Implemented |
+| Extract domain-like candidates and filter invalid labels | Implemented |
+| Write extraction results to JSON | Implemented |
+| Validate knowledge records with Pydantic | Implemented |
+| Update first-seen/last-seen cache records | Implemented |
+| Extract URLs and file hashes | Planned |
+| Threat-feed enrichment and verdicting | Planned |
+| Rule-based and machine-learning risk scoring | Planned |
+| FastAPI service or analyst dashboard | Planned |
+| Automated test coverage | Planned |
+
+## Roadmap
+
+- Add focused unit tests for extraction, validation, and cache updates.
+- Expand indicator extraction to URLs and file hashes.
+- Add evidence-backed threat-intelligence enrichment and explainable verdicts.
+- Implement risk rules and evaluate a machine-learning approach against a documented dataset.
+- Define service and analyst-interface requirements before adding an API or dashboard.
+
+## Security Scope
+
+This is a defensive analysis project. The included demo data is synthetic; the current scripts do not scan networks, execute files, block indicators, or perform incident-response actions. Treat all extracted values as unverified input until they are checked against trusted sources. Do not place credentials or API keys in source files; use local environment configuration when integrations are introduced.
