@@ -19,4 +19,3 @@ evidence_data = Evidence(ioc=5698, ioc_type="type of ioc", source="sourceoftheip
 
 print(evidence_data)
 
-
