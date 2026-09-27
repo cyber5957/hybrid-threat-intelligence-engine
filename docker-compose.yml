@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      SENTINEL_ENV: ${SENTINEL_ENV:-development}
+      SENTINEL_ADMIN_USERNAME: ${SENTINEL_ADMIN_USERNAME:-admin}
+      SENTINEL_DB_PATH: /app/data/sentinel.db
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
+      ABUSEIPDB_API_KEY: ${ABUSEIPDB_API_KEY:-}
+      OTX_API_KEY: ${OTX_API_KEY:-}
+      SHODAN_API_KEY: ${SHODAN_API_KEY:-}
+    volumes:
+      - sentinel-data:/app/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/healthz')"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:80"
+volumes:
+  sentinel-data:

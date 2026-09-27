@@ -1,0 +1,5 @@
+.trend-svg{width:100%;height:100%;overflow:visible}
+.trend-svg text{font-family:var(--mono)}
+.toast.error{background:#2a1918;border-color:#6c3934;color:#ffc1b6}
+.toast.warning{background:#282216;border-color:#66512b;color:#f2d08d}
+.provider-result.failed{border-color:#50312e;background:#1d1718}

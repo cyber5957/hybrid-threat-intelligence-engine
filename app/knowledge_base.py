@@ -1,8 +1,13 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from config import source_freshness, default_freshness
 import json
 from pathlib import Path
+from datetime import timezone
+
+try:
+    from .config import source_freshness, default_freshness
+except ImportError:
+    from config import source_freshness, default_freshness
 
 # --- Models ---
 
@@ -56,6 +61,14 @@ def save_knowledge_base(kb):
     with CACHED_FILE.open("w", encoding="utf-8") as f:
         json.dump({k: v.model_dump(mode="json") for k, v in kb.items()}, f, indent=2)
 
+
+def is_evidence_fresh(source: str, evidence_timestamp: datetime) -> bool:
+    allowed_freshness = source_freshness.get(source, default_freshness)
+    if evidence_timestamp.tzinfo is None:
+        evidence_timestamp = evidence_timestamp.replace(tzinfo=timezone.utc)
+    age = datetime.now(timezone.utc) - evidence_timestamp
+    return age <= allowed_freshness
+
 # --- Main ---
 
 def process():
@@ -64,7 +77,7 @@ def process():
     with INPUT_FILE.open(encoding="utf-8") as f:
         data = json.load(f)
 
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
 
     for key, ioc_list in data.items():
         ioc_type = TYPE_MAP.get(key, "unknown")
@@ -101,10 +114,3 @@ def process():
 
 if __name__ == "__main__":
     process()
-
-
-def is_evidence_fresh(source: str, evidence_timestamp: datetime) -> bool:
-    allowed_freshness = source_freshness.get(source, default_freshness)
-    age = datetime.now() - evidence_timestamp
-
-    return age <= allowed_freshness

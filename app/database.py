@@ -42,7 +42,7 @@ def init_db() -> None:
         CREATE TABLE IF NOT EXISTS enrichment_results (
           id INTEGER PRIMARY KEY, indicator_id INTEGER NOT NULL REFERENCES indicators(id) ON DELETE CASCADE,
           provider TEXT NOT NULL, verdict TEXT NOT NULL, risk_score INTEGER, metadata TEXT NOT NULL,
-          checked_at TEXT NOT NULL, cache_key TEXT NOT NULL
+          status TEXT NOT NULL DEFAULT 'complete', checked_at TEXT NOT NULL, cache_key TEXT NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_enrichment_cache ON enrichment_results(cache_key, checked_at DESC);
         CREATE TABLE IF NOT EXISTS activity_log (
@@ -50,7 +50,15 @@ def init_db() -> None:
           details TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL
         );
         CREATE INDEX IF NOT EXISTS idx_activity_created ON activity_log(created_at DESC);
+        CREATE TABLE IF NOT EXISTS enrichment_jobs (
+          id TEXT PRIMARY KEY, alert_id TEXT NOT NULL REFERENCES alerts(id), status TEXT NOT NULL,
+          total INTEGER NOT NULL, completed INTEGER NOT NULL DEFAULT 0, warnings TEXT NOT NULL DEFAULT '[]',
+          created_at TEXT NOT NULL, finished_at TEXT
+        );
         """)
+        columns = {row["name"] for row in db.execute("PRAGMA table_info(enrichment_results)")}
+        if "status" not in columns:
+            db.execute("ALTER TABLE enrichment_results ADD COLUMN status TEXT NOT NULL DEFAULT 'complete'")
 
 
 def record_activity(action: str, message: str, details: dict[str, Any] | None = None) -> None:
