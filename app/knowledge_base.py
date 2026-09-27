@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from config import source_freshness, default_freshness
 import json
 from pathlib import Path
 
@@ -70,8 +71,18 @@ def process():
 
         for ioc in ioc_list:
             if ioc in kb:
-                kb[ioc].last_seen = now
-                print(f"[KNOWN] {ioc} ({ioc_type})")
+                existing = kb[ioc]
+                latest_evidence = existing.evidence[-1] if existing.evidence else None
+
+                if latest_evidence and is_evidence_fresh(
+                    latest_evidence.source,
+                    latest_evidence.timestamp,
+                ):
+                    existing.last_seen = now
+                    print(f"[KNOWN] {ioc} ({ioc_type})")
+                else:
+                    existing.last_seen = now
+                    print(f"[KNOWN:STALE] {ioc} ({ioc_type})")
             else:
                 kb[ioc] = KnownIOC(
                     ioc=ioc,
@@ -89,4 +100,11 @@ def process():
     print(f"\nDone. {len(kb)} total IoCs in cache.")
 
 if __name__ == "__main__":
-    process()   
+    process()
+
+
+def is_evidence_fresh(source: str, evidence_timestamp: datetime) -> bool:
+    allowed_freshness = source_freshness.get(source, default_freshness)
+    age = datetime.now() - evidence_timestamp
+
+    return age <= allowed_freshness
