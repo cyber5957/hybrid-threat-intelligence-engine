@@ -20,7 +20,7 @@ flowchart LR
   ASSESS --> UI
 ```
 
-The API's SQLite database is the live knowledge cache. Cached provider findings are checked before outbound requests: VirusTotal, AbuseIPDB, and Shodan findings use the `threat_intel_api` freshness window (3 days by default); OTX uses the `osint` window (7 days by default). These values are set in `app/config.py`. Deterministic rules produce the stored verdict and rationale from usable provider findings. LLM explanation is not implemented in this build; it must not be presented as an active stage. Current username-only admin access is a local development gate, not secure authentication; keep the service bound to localhost.
+The API's SQLite database is the live knowledge cache. Cached provider findings are checked before outbound requests: VirusTotal, AbuseIPDB, and Shodan findings use the `threat_intel_api` freshness window (3 days by default); OTX uses the `osint` window (7 days by default). These values are set in `app/config.py`. Deterministic rules produce the stored verdict and rationale from usable provider findings. Alert-level reports provide evidence-grounded summaries and low-confidence ATT&CK search hints based only on matching terms in the submitted text; these are leads for analysts, not confirmed technique mapping. Analyst TP/FP labels are persisted for review and do not automatically change verdicts. ML scoring, automatic retraining, an LLM explanation service, and webhook alert delivery are not implemented. Current username-only admin access is a local development gate, not secure authentication; keep the service bound to localhost.
 
 ## Quick start: local development
 
@@ -72,6 +72,8 @@ All analyst data endpoints require the configured `X-Admin-Username`. `GET /api/
 | `GET /api/jobs/{job_id}` | Returns enrichment job state, completed/total counts, and provider warnings. Poll while a job is pending or running. |
 | `GET /api/indicators` | Search/filter/paginate cached records with `page`, `page_size`, `search`, `type`, and `verdict` parameters. |
 | `GET /api/indicators/{id}` | Indicator details, source alert, provider results, and related indicators. |
+| `GET /api/alerts/{alert_id}/analysis` | Alert-wide recorded-evidence summary and low-confidence ATT&CK search hints. Reports `ml_score: null` and disabled explanation status because no trained model or LLM is configured. |
+| `POST /api/indicators/{id}/feedback` | Accepts `{"label":"true_positive"}` or `{"label":"false_positive"}` and an optional note; stores an audit record without changing the verdict. |
 | `GET /api/activity` | Paginated extraction and enrichment audit events. |
 | `GET /api/summary` | Counts, top types, and activity trend for the dashboard. |
 

@@ -8,6 +8,9 @@ export type Activity = { id:number; action:string; message:string; details:Recor
 export type Health = { status:string; backend:string; database:string; providers:Record<string,{configured:boolean;status:string}> }
 export type Summary = { total_indicators:number; malicious_this_week:number; unknown_indicators:number; top_types:{type:string;count:number}[]; trend:{date:string;count:number}[] }
 export type EnrichmentJob = { job_id:string; alert_id:string; status:'pending'|'running'|'completed'|'failed'; total:number; completed:number; warnings:string[] }
+export type Feedback = { id:number; label:'true_positive'|'false_positive'; note:string; created_at:string }
+export type AttackHint = { technique_id:string; name:string; matched_terms:string[]; source:string; confidence:'low'; inference:true }
+export type AlertAnalysis = { alert:{id:string;raw_text:string;created_at:string}; indicators:Indicator[]; assessment:{summary:string;indicator_count:number;evidence_count:number;provider_counts:Record<string,number>;recommended_actions:string[];grounding:string}; attack_hints:AttackHint[]; ml_score:number|null; ml_status:string; explanation_status:string }
 const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/$/, '')
 export const setAdminUsername = (username:string) => sessionStorage.setItem('sentinel-admin-username',username)
 export const clearAdminUsername = () => sessionStorage.removeItem('sentinel-admin-username')
@@ -28,6 +31,8 @@ export const api = {
   job:(jobId:string)=>request<EnrichmentJob>(`/api/jobs/${encodeURIComponent(jobId)}`),
   indicators:(params:Record<string,string|number>)=>request<Page<Indicator>>(`/api/indicators?${new URLSearchParams(Object.entries(params).map(([k,v])=>[k,String(v)]))}`),
   detail:(id:number)=>request<Indicator & {source_alert:{id:string;raw_text:string;created_at:string}|null;related:Indicator[]}>(`/api/indicators/${id}`),
+  feedback:(id:number,label:'true_positive'|'false_positive',note='')=>request<Feedback>(`/api/indicators/${id}/feedback`,{method:'POST',body:JSON.stringify({label,note})}),
+  alertAnalysis:(id:string)=>request<AlertAnalysis>(`/api/alerts/${encodeURIComponent(id)}/analysis`),
   activity:(page=1)=>request<Page<Activity>>(`/api/activity?page=${page}&page_size=30`),
   summary:()=>request<Summary>('/api/summary')
 }

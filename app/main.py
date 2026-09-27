@@ -23,6 +23,7 @@ from .database import connect, init_db, record_activity
 from .enrichment import aggregate, enrich_one, provider_status, PROVIDER_FRESHNESS
 from .extraction import extract_indicators
 from .risk_rules import assess_evidence
+from .analysis import attack_hints, grounded_summary
 
 APP_NAME = "Sentinel Threat Intelligence API"
 ADMIN_USERNAME = os.getenv("SENTINEL_ADMIN_USERNAME", "admin").strip() or "admin"
@@ -48,6 +49,11 @@ class ExtractRequest(BaseModel):
 class EnrichRequest(BaseModel):
     alert_id: str = Field(min_length=1)
     indicators: list[int] = Field(min_length=1, max_length=100)
+
+
+class FeedbackRequest(BaseModel):
+    label: str = Field(pattern="^(true_positive|false_positive)$")
+    note: str = Field(default="", max_length=2000)
 
 
 def authenticate(x_admin_username: str | None = Header(default=None, alias="X-Admin-Username")) -> None:
@@ -238,7 +244,47 @@ def indicator_detail(indicator_id: int) -> dict[str, Any]:
         related = db.execute("SELECT id,value,type,verdict,risk_score FROM indicators WHERE alert_id=? AND id<>? LIMIT 20", (item.get("alert_id"), indicator_id)).fetchall() if item.get("alert_id") else []
     item["source_alert"] = dict(alert) if alert else None
     item["related"] = [dict(row) for row in related]
+    with connect() as db:
+        feedback = db.execute("SELECT id,label,note,created_at FROM analyst_feedback WHERE indicator_id=? ORDER BY created_at DESC", (indicator_id,)).fetchall()
+    item["feedback"] = [dict(row) for row in feedback]
     return item
+
+
+@app.post("/api/indicators/{indicator_id}/feedback", status_code=201, dependencies=[Depends(authenticate)])
+def submit_feedback(indicator_id: int, payload: FeedbackRequest) -> dict[str, Any]:
+    """Record an analyst label for future review; feedback never changes verdicts automatically."""
+    now = datetime.now(timezone.utc).isoformat()
+    with connect() as db:
+        if not db.execute("SELECT 1 FROM indicators WHERE id=?", (indicator_id,)).fetchone():
+            raise HTTPException(status_code=404, detail="Indicator not found")
+        cursor = db.execute("INSERT INTO analyst_feedback(indicator_id,label,note,created_at) VALUES(?,?,?,?)",
+                            (indicator_id, payload.label, payload.note.strip(), now))
+        db.execute("INSERT INTO activity_log(action,message,details,created_at) VALUES(?,?,?,?)",
+                   ("feedback", f"Analyst marked indicator {payload.label.replace('_', ' ')}", json.dumps({"indicator_id": indicator_id, "feedback_id": cursor.lastrowid}), now))
+    return {"id": cursor.lastrowid, "indicator_id": indicator_id, "label": payload.label, "note": payload.note.strip(), "created_at": now}
+
+
+@app.get("/api/alerts/{alert_id}/analysis", dependencies=[Depends(authenticate)])
+def alert_analysis(alert_id: str) -> dict[str, Any]:
+    """Return alert-wide evidence summary and low-confidence ATT&CK search hints."""
+    with connect() as db:
+        alert = db.execute("SELECT id,raw_text,created_at FROM alerts WHERE id=?", (alert_id,)).fetchone()
+        if not alert:
+            raise HTTPException(status_code=404, detail="Alert not found")
+        rows = db.execute("SELECT id,value,type,verdict,risk_score FROM indicators WHERE alert_id=? ORDER BY id", (alert_id,)).fetchall()
+        provider_rows = db.execute("""SELECT e.provider,e.verdict,e.risk_score,e.metadata,e.status,e.checked_at
+                                     FROM enrichment_results e JOIN indicators i ON i.id=e.indicator_id
+                                     WHERE i.alert_id=? ORDER BY e.id DESC""", (alert_id,)).fetchall()
+    providers = []
+    seen = set()
+    for row in provider_rows:
+        if row["provider"] not in seen:
+            seen.add(row["provider"])
+            providers.append({**dict(row), "metadata": json.loads(row["metadata"])})
+    return {"alert": dict(alert), "indicators": [dict(row) for row in rows],
+            "assessment": grounded_summary(providers, len(rows)), "attack_hints": attack_hints(alert["raw_text"]),
+            "ml_score": None, "ml_status": "unavailable_no_trained_model",
+            "explanation_status": "grounded_rules_no_llm_configured"}
 
 
 @app.get("/api/activity", dependencies=[Depends(authenticate)])

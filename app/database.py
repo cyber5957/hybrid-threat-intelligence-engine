@@ -55,6 +55,12 @@ def init_db() -> None:
           total INTEGER NOT NULL, completed INTEGER NOT NULL DEFAULT 0, warnings TEXT NOT NULL DEFAULT '[]',
           created_at TEXT NOT NULL, finished_at TEXT
         );
+        CREATE TABLE IF NOT EXISTS analyst_feedback (
+          id INTEGER PRIMARY KEY, indicator_id INTEGER NOT NULL REFERENCES indicators(id) ON DELETE CASCADE,
+          label TEXT NOT NULL CHECK(label IN ('true_positive','false_positive')),
+          note TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_feedback_indicator ON analyst_feedback(indicator_id, created_at DESC);
         """)
         columns = {row["name"] for row in db.execute("PRAGMA table_info(enrichment_results)")}
         if "status" not in columns:
