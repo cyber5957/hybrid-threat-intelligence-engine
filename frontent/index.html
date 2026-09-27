@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Threat Intelligence Engine</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <p> this is a file</p>
+            <span>ThreatIntel</span>
+        </div>
+
+       <nav id="sidebarNav">
+
+    <a href="#" class="nav-link active" data-section="dashboard">
+        Dashboard
+    </a>
+
+    <a href="#" class="nav-link" data-section="alert">
+        Alert Analysis
+    </a>
+
+    <a href="#" class="nav-link" data-section="ioc">
+        IOC Explorer
+    </a>
+
+    <a href="#" class="nav-link" data-section="threat">
+        Threat Intelligence
+    </a>
+
+    <a href="#" class="nav-link" data-section="history">
+        Analysis History
+    </a>
+
+</nav>
+
+        <div class="sidebar-bottom">
+            <p>Hybrid ML + LLM</p>
+            <span>SOC Analyst Platform</span>
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+   <main class="main-content">
+
+    <div id="dashboardSection">
+
+        <!-- yahan existing topbar hai,
+             alert analysis,
+             risk overview,
+             IOC,
+             AI explanation,
+             threat intelligence,
+             recommended actions
+             sab existing content rahega -->
+
+    </div>
+
+</main>
+
+        <!-- Header -->
+       <header class="topbar" id="dashboardSection">
+
+            <div>
+                <h1>SOC Analyst Dashboard</h1>
+                <p>Hybrid ML + LLM Threat Intelligence Engine</p>
+            </div>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+
+        </header>
+
+
+        <!-- Alert Analysis -->
+      <section class="analysis-card" id="alertSection">
+
+            <div class="section-title">
+                <h2> Alert Analysis</h2>
+                <p>Enter suspicious alert or threat report</p>
+            </div>
+
+            <textarea
+                id="alertInput"
+                placeholder="Paste suspicious alert text here..."
+            ></textarea>
+
+            <button id="analyzeBtn">
+                Analyze Alert
+            </button>
+
+        </section>
+
+        <!-- Risk Overview -->
+<section class="stats">
+
+    <div class="stat-card risk-card">
+        <div class="stat-icon"></div>
+        <div>
+            <span>Risk Level</span>
+            <strong id="riskLevel">--</strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div>
+            <span>ML Confidence</span>
+            <strong id="confidence">--</strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div>
+            <span>IOCs Detected</span>
+            <strong id="iocCount">--</strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">✓</div>
+        <div>
+            <span>Analysis Status</span>
+            <strong id="analysisStatus">Waiting</strong>
+        </div>
+    </div>
+
+</section>
+
+        <!-- IOC Section -->
+<section class="content-card" id="iocSection">
+
+    <div class="section-title">
+        <h2> Extracted Indicators of Compromise</h2>
+        <p>Indicators identified from the submitted alert</p>
+    </div>
+
+   <div class="ioc-table" id="iocTable">
+
+        <div class="ioc-row ioc-header">
+            <div>Type</div>
+            <div>Indicator</div>
+            <div>Severity</div>
+            <div>Status</div>
+        </div>
+
+        <div class="ioc-row">
+            <div>IP Address</div>
+            <div>185.45.23.10</div>
+            <div class="severity-high">HIGH</div>
+            <div>Suspicious</div>
+        </div>
+
+        <div class="ioc-row">
+            <div>Domain</div>
+            <div>malicious-example.com</div>
+            <div class="severity-high">HIGH</div>
+            <div>Suspicious</div>
+        </div>
+
+        <div class="ioc-row">
+            <div>URL</div>
+            <div>http://malicious-example.com/login</div>
+            <div class="severity-medium">MEDIUM</div>
+            <div>Requires Review</div>
+        </div>
+
+        <div class="ioc-row">
+            <div>File Hash</div>
+            <div>d41d8cd98f00b204e9800998ecf8427e</div>
+            <div class="severity-high">HIGH</div>
+            <div>Suspicious</div>
+        </div>
+
+    </div>
+
+</section>
+
+        <!-- AI Analyst Explanation -->
+<section class="content-card">
+
+    <div class="section-title">
+        <h2> AI Analyst Explanation</h2>
+        <p>Source-grounded security assessment</p>
+    </div>
+
+    <div class="ai-result">
+
+        <div class="ai-header">
+            <span class="ai-icon"></span>
+
+            <div>
+                <h3>Analyst Assessment</h3>
+                <p>Generated from available security evidence</p>
+            </div>
+        </div>
+
+        <div id="aiExplanation" class="explanation">
+            Analysis results will appear here.
+        </div>
+
+    </div>
+
+</section>
+
+
+        <!-- Threat Intelligence -->
+<section class="content-card" id="threatSection">
+
+    <div class="section-title">
+        <h2> Threat Intelligence Evidence</h2>
+        <p>Supporting information retrieved from trusted sources</p>
+    </div>
+
+    <div class="intel-grid">
+
+        <div class="intel-card">
+            <span class="intel-label">Source</span>
+            <strong>Threat Intelligence Knowledge Base</strong>
+        </div>
+
+        <div class="intel-card">
+            <span class="intel-label">Evidence Status</span>
+            <strong id="evidenceStatus">Pending Analysis</strong>
+        </div>
+
+        <div class="intel-card">
+            <span class="intel-label">Confidence</span>
+            <strong id="evidenceConfidence">--</strong>
+        </div>
+
+    </div>
+
+    <div id="threatEvidence" class="evidence-box">
+        No threat intelligence data available.
+    </div>
+
+</section>
+
+        <!-- Recommended Actions -->
+<section class="content-card">
+
+    <div class="section-title">
+        <h2> Recommended Next Actions</h2>
+        <p>Suggested actions for SOC investigation</p>
+    </div>
+
+   <div class="actions-box" id="recommendedActions">
+
+        <div class="action-item">
+            <span>01</span>
+            <p>Investigate the source IP address.</p>
+        </div>
+
+        <div class="action-item">
+            <span>02</span>
+            <p>Review related authentication and endpoint logs.</p>
+        </div>
+
+        <div class="action-item">
+            <span>03</span>
+            <p>Check the identified domain and URL against trusted intelligence.</p>
+        </div>
+
+        <div class="action-item">
+            <span>04</span>
+            <p>Correlate the file hash with endpoint activity.</p>
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- Analysis History -->
+<section class="content-card" id="historySection">
+
+    <div class="section-title">
+        <h2> Analysis History</h2>
+        <p>Previous alert analysis records</p>
+    </div>
+
+   <div id="historyList">
+
+    <div class="history-empty">
+        <div class="history-icon"></div>
+        <h3>No Analysis History</h3>
+        <p>Completed alert analyses will appear here.</p>
+    </div>
+
+</div>
+
+</section>
+ </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
