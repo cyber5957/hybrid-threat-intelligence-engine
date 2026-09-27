@@ -1,312 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Threat Intelligence Engine</title>
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1118">
+  <title>Sentinel // Threat Intelligence Workbench</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-
-        <div class="logo">
-            <p> this is a file</p>
-            <span>ThreatIntel</span>
-        </div>
-
-       <nav id="sidebarNav">
-
-    <a href="#" class="nav-link active" data-section="dashboard">
-        Dashboard
-    </a>
-
-    <a href="#" class="nav-link" data-section="alert">
-        Alert Analysis
-    </a>
-
-    <a href="#" class="nav-link" data-section="ioc">
-        IOC Explorer
-    </a>
-
-    <a href="#" class="nav-link" data-section="threat">
-        Threat Intelligence
-    </a>
-
-    <a href="#" class="nav-link" data-section="history">
-        Analysis History
-    </a>
-
-</nav>
-
-        <div class="sidebar-bottom">
-            <p>Hybrid ML + LLM</p>
-            <span>SOC Analyst Platform</span>
-        </div>
-
-    </aside>
-
-
-    <!-- Main Content -->
-   <main class="main-content">
-
-    <div id="dashboardSection">
-
-        <!-- yahan existing topbar hai,
-             alert analysis,
-             risk overview,
-             IOC,
-             AI explanation,
-             threat intelligence,
-             recommended actions
-             sab existing content rahega -->
-
-    </div>
-
-</main>
-
-        <!-- Header -->
-       <header class="topbar" id="dashboardSection">
-
-            <div>
-                <h1>SOC Analyst Dashboard</h1>
-                <p>Hybrid ML + LLM Threat Intelligence Engine</p>
-            </div>
-
-            <div class="status">
-                <span class="status-dot"></span>
-                System Online
-            </div>
-
-        </header>
-
-
-        <!-- Alert Analysis -->
-      <section class="analysis-card" id="alertSection">
-
-            <div class="section-title">
-                <h2> Alert Analysis</h2>
-                <p>Enter suspicious alert or threat report</p>
-            </div>
-
-            <textarea
-                id="alertInput"
-                placeholder="Paste suspicious alert text here..."
-            ></textarea>
-
-            <button id="analyzeBtn">
-                Analyze Alert
-            </button>
-
-        </section>
-
-        <!-- Risk Overview -->
-<section class="stats">
-
-    <div class="stat-card risk-card">
-        <div class="stat-icon"></div>
-        <div>
-            <span>Risk Level</span>
-            <strong id="riskLevel">--</strong>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon"></div>
-        <div>
-            <span>ML Confidence</span>
-            <strong id="confidence">--</strong>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon"></div>
-        <div>
-            <span>IOCs Detected</span>
-            <strong id="iocCount">--</strong>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon">✓</div>
-        <div>
-            <span>Analysis Status</span>
-            <strong id="analysisStatus">Waiting</strong>
-        </div>
-    </div>
-
-</section>
-
-        <!-- IOC Section -->
-<section class="content-card" id="iocSection">
-
-    <div class="section-title">
-        <h2> Extracted Indicators of Compromise</h2>
-        <p>Indicators identified from the submitted alert</p>
-    </div>
-
-   <div class="ioc-table" id="iocTable">
-
-        <div class="ioc-row ioc-header">
-            <div>Type</div>
-            <div>Indicator</div>
-            <div>Severity</div>
-            <div>Status</div>
-        </div>
-
-        <div class="ioc-row">
-            <div>IP Address</div>
-            <div>185.45.23.10</div>
-            <div class="severity-high">HIGH</div>
-            <div>Suspicious</div>
-        </div>
-
-        <div class="ioc-row">
-            <div>Domain</div>
-            <div>malicious-example.com</div>
-            <div class="severity-high">HIGH</div>
-            <div>Suspicious</div>
-        </div>
-
-        <div class="ioc-row">
-            <div>URL</div>
-            <div>http://malicious-example.com/login</div>
-            <div class="severity-medium">MEDIUM</div>
-            <div>Requires Review</div>
-        </div>
-
-        <div class="ioc-row">
-            <div>File Hash</div>
-            <div>d41d8cd98f00b204e9800998ecf8427e</div>
-            <div class="severity-high">HIGH</div>
-            <div>Suspicious</div>
-        </div>
-
-    </div>
-
-</section>
-
-        <!-- AI Analyst Explanation -->
-<section class="content-card">
-
-    <div class="section-title">
-        <h2> AI Analyst Explanation</h2>
-        <p>Source-grounded security assessment</p>
-    </div>
-
-    <div class="ai-result">
-
-        <div class="ai-header">
-            <span class="ai-icon"></span>
-
-            <div>
-                <h3>Analyst Assessment</h3>
-                <p>Generated from available security evidence</p>
-            </div>
-        </div>
-
-        <div id="aiExplanation" class="explanation">
-            Analysis results will appear here.
-        </div>
-
-    </div>
-
-</section>
-
-
-        <!-- Threat Intelligence -->
-<section class="content-card" id="threatSection">
-
-    <div class="section-title">
-        <h2> Threat Intelligence Evidence</h2>
-        <p>Supporting information retrieved from trusted sources</p>
-    </div>
-
-    <div class="intel-grid">
-
-        <div class="intel-card">
-            <span class="intel-label">Source</span>
-            <strong>Threat Intelligence Knowledge Base</strong>
-        </div>
-
-        <div class="intel-card">
-            <span class="intel-label">Evidence Status</span>
-            <strong id="evidenceStatus">Pending Analysis</strong>
-        </div>
-
-        <div class="intel-card">
-            <span class="intel-label">Confidence</span>
-            <strong id="evidenceConfidence">--</strong>
-        </div>
-
-    </div>
-
-    <div id="threatEvidence" class="evidence-box">
-        No threat intelligence data available.
-    </div>
-
-</section>
-
-        <!-- Recommended Actions -->
-<section class="content-card">
-
-    <div class="section-title">
-        <h2> Recommended Next Actions</h2>
-        <p>Suggested actions for SOC investigation</p>
-    </div>
-
-   <div class="actions-box" id="recommendedActions">
-
-        <div class="action-item">
-            <span>01</span>
-            <p>Investigate the source IP address.</p>
-        </div>
-
-        <div class="action-item">
-            <span>02</span>
-            <p>Review related authentication and endpoint logs.</p>
-        </div>
-
-        <div class="action-item">
-            <span>03</span>
-            <p>Check the identified domain and URL against trusted intelligence.</p>
-        </div>
-
-        <div class="action-item">
-            <span>04</span>
-            <p>Correlate the file hash with endpoint activity.</p>
-        </div>
-
-    </div>
-
-</section>
-
-    <!-- Analysis History -->
-<section class="content-card" id="historySection">
-
-    <div class="section-title">
-        <h2> Analysis History</h2>
-        <p>Previous alert analysis records</p>
-    </div>
-
-   <div id="historyList">
-
-    <div class="history-empty">
-        <div class="history-icon"></div>
-        <h3>No Analysis History</h3>
-        <p>Completed alert analyses will appear here.</p>
-    </div>
-
-</div>
-
-</section>
- </main>
-
-    <script src="script.js"></script>
-
+  <aside class="sidebar">
+    <a class="brand" href="#overview" aria-label="Sentinel overview"><span class="brand-mark">S</span><span><b>SENTINEL</b><small>THREAT WORKBENCH</small></span></a>
+    <div class="workspace-label">WORKSPACE</div>
+    <nav id="sidebarNav" aria-label="Main navigation">
+      <a class="nav-link active" href="#overview"><span class="nav-icon">▦</span>Overview</a>
+      <a class="nav-link" href="#analyze"><span class="nav-icon">⌁</span>Alert analysis</a>
+      <a class="nav-link" href="#indicators"><span class="nav-icon">◎</span>Indicators <span class="nav-count" id="navIocCount">0</span></a>
+      <a class="nav-link" href="#knowledge"><span class="nav-icon">◈</span>Knowledge cache</a>
+      <a class="nav-link" href="#history"><span class="nav-icon">◷</span>Recent activity</a>
+    </nav>
+    <div class="sidebar-bottom"><span class="pulse"></span><div><b>Local demo mode</b><small>No live feeds connected</small></div></div>
+  </aside>
+
+  <main class="main-content" id="overview">
+    <header class="topbar">
+      <div class="crumb">THREAT INTELLIGENCE <span>/</span> WORKSPACE</div>
+      <div class="topbar-right"><span class="mode-badge"><i></i> LOCAL PREVIEW</span><span class="avatar">DA</span></div>
+    </header>
+
+    <section class="welcome">
+      <div><p class="eyebrow">DEFENSIVE ANALYSIS WORKSPACE</p><h1>Threat intelligence<br><em>at a glance.</em></h1><p class="welcome-copy">Extract candidate indicators from an alert and prepare them for review in the local knowledge cache.</p></div>
+      <div class="welcome-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-core">◎</div><span class="orbit-tag tag-a">IOC / EXTRACT</span><span class="orbit-tag tag-b">EVIDENCE / REVIEW</span></div>
+    </section>
+
+    <section class="notice" aria-label="Current project capability notice"><span class="notice-icon">i</span><p><b>Early development</b> — this interface runs a browser-side extraction preview. It does not call the Python extractor, verify indicators, or calculate risk.</p><span class="notice-status">UNVERIFIED INPUT</span></section>
+
+    <section class="section-heading" id="analyze"><div><p class="eyebrow">01 / SUBMIT</p><h2>Analyze an alert</h2><p>Extract candidate IPv4 addresses and domains for analyst review.</p></div><button class="button button-quiet" id="loadDemo" type="button">Load demo alert <span>↗</span></button></section>
+    <section class="analyzer panel">
+      <label class="field-label" for="alertInput">ALERT DESCRIPTION <span>TEXT ONLY · PROCESSED IN THIS BROWSER</span></label>
+      <textarea id="alertInput" placeholder="Paste a security alert or report here…" spellcheck="false"></textarea>
+      <div class="analyzer-footer"><span class="input-hint"><span class="keycap">⌘</span> Candidate indicators only; validate before use.</span><button class="button button-primary" id="analyzeBtn" type="button"><span>Extract indicators</span><span class="button-arrow">→</span></button></div>
+      <p class="form-error" id="formError" role="alert" hidden></p>
+    </section>
+
+    <section class="section-heading results-heading" id="indicators"><div><p class="eyebrow">02 / REVIEW</p><h2>Extraction snapshot</h2><p id="snapshotCaption">Waiting for alert text</p></div><span class="snapshot-time" id="snapshotTime">NO RUN</span></section>
+    <section class="metric-grid" aria-label="Extraction summary">
+      <article class="metric panel"><div class="metric-top"><span>Candidate indicators</span><span class="metric-glyph">◎</span></div><strong id="iocCount">—</strong><small>Across supported types</small></article>
+      <article class="metric panel"><div class="metric-top"><span>IPv4 addresses</span><span class="metric-glyph">⌗</span></div><strong id="ipCount">—</strong><small>Octets checked</small></article>
+      <article class="metric panel"><div class="metric-top"><span>Domains</span><span class="metric-glyph">⌘</span></div><strong id="domainCount">—</strong><small>Candidate hostnames</small></article>
+      <article class="metric panel"><div class="metric-top"><span>Assessment</span><span class="metric-glyph amber">!</span></div><strong class="metric-word">Unverified</strong><small>No reputation lookup</small></article>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="panel-heading"><div><h3>Extracted indicators</h3><p>Values are candidates, not confirmed threats.</p></div><span class="table-count" id="tableCount">0 RESULTS</span></div>
+      <div class="table-wrap"><table><thead><tr><th>TYPE</th><th>INDICATOR</th><th>VALIDATION</th><th>VERDICT</th></tr></thead><tbody id="iocTable"><tr class="empty-row"><td colspan="4"><span class="empty-icon">⌁</span><b>No extraction yet</b><small>Submit an alert to see candidate IPs and domains.</small></td></tr></tbody></table></div>
+    </section>
+
+    <section class="lower-grid" id="knowledge">
+      <article class="panel knowledge-panel"><div class="panel-heading"><div><p class="eyebrow">PROJECT DATA</p><h3>Knowledge cache</h3></div><span class="cache-icon">◈</span></div><p class="body-copy">The Python workflow stores indicator records with a default <b>unknown</b> verdict. Evidence sources and freshness rules are defined in the project, but this preview does not read or update that cache.</p><div class="cache-row"><span>Current verdict model</span><b class="unknown-pill">UNKNOWN</b></div><div class="cache-row"><span>Evidence enrichment</span><b class="muted-value">Not connected</b></div><div class="cache-row"><span>Python API</span><b class="muted-value">Not implemented</b></div></article>
+      <article class="panel activity-panel" id="history"><div class="panel-heading"><div><p class="eyebrow">SESSION</p><h3>Recent activity</h3></div><span class="session-label">THIS SESSION</span></div><div id="historyList" class="activity-list"><div class="activity-empty"><span>◷</span><p>Nothing here yet.<small>Your extraction runs will appear in this session.</small></p></div></div></article>
+    </section>
+    <footer><span>SENTINEL / HYBRID THREAT INTELLIGENCE ENGINE</span><span>LOCAL PREVIEW · INDICATORS REQUIRE VERIFICATION</span></footer>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>

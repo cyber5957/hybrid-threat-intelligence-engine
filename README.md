@@ -2,13 +2,14 @@
 
 A Python project for extracting indicators of compromise (IOCs) from security alert text and maintaining a small, structured knowledge cache. The current demo focuses on IP addresses and domain-like indicators, using synthetic alert data reserved for documentation and testing.
 
-> **Project status:** Early development. The IOC extraction and knowledge-cache scripts are implemented; risk scoring, machine learning, enrichment APIs, and analyst interfaces are not yet implemented.
+> **Project status:** Early development. The IOC extraction and knowledge-cache scripts are implemented. `frontent/` contains a static analyst-interface preview with browser-side candidate extraction; it is not connected to the Python workflow. Risk scoring, machine learning, enrichment APIs, and a backend service are not implemented.
 
 ## Contents
 
 - [What It Does](#what-it-does)
 - [Quick Start](#quick-start)
 - [Run the Demo](#run-the-demo)
+- [Frontend Preview](#frontend-preview)
 - [Data and Output](#data-and-output)
 - [Project Layout](#project-layout)
 - [Current Scope](#current-scope)
@@ -70,6 +71,10 @@ results = extract_iocs("Suspicious connection to 198.51.100.42 at login.example.
 
 Each extraction replaces the contents of `ioc_results.json` with the latest result.
 
+## Frontend Preview
+
+Open `frontent/index.html` in a browser to view the static analyst-interface preview. Its extraction runs locally in browser JavaScript and supports candidate IPv4 addresses and domains. It does not call `app/ioc_extractor.py`, read or update the Python knowledge cache, verify indicators, or calculate risk. Treat all results as unverified candidates.
+
 ## Data and Output
 
 The extraction result has four keys to keep a consistent JSON shape:
@@ -124,7 +129,8 @@ logs/                    Reserved for application logs
 | Extract URLs and file hashes | Planned |
 | Threat-feed enrichment and verdicting | Planned |
 | Rule-based and machine-learning risk scoring | Planned |
-| FastAPI service or analyst dashboard | Planned |
+| Static analyst-interface preview | Implemented (not connected to Python workflow) |
+| FastAPI service or integrated analyst dashboard | Planned |
 | Automated test coverage | Planned |
 
 ## Roadmap
