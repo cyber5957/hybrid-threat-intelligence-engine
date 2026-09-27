@@ -1,6 +1,8 @@
 export type Verdict = 'malicious' | 'suspicious' | 'clean' | 'unknown'
-export type Indicator = { id:number; value:string; type:string; first_seen:string; last_seen:string; verdict:Verdict; risk_score:number|null; alert_id:string|null; providers?:Provider[] }
+export type Indicator = { id:number; value:string; type:string; first_seen:string; last_seen:string; verdict:Verdict; risk_score:number|null; alert_id:string|null; providers?:Provider[]; assessment?:Assessment; knowledge_cache?:KnowledgeCache }
 export type Provider = { provider:string; verdict:Verdict; risk_score:number|null; metadata:Record<string, any>; checked_at?:string; status?:string }
+export type Assessment = { verdict:Verdict; risk_score:number|null; confidence:string; evidence_count:number; sources:string[]; rationale:string; decision_source:'deterministic_rules' }
+export type KnowledgeCache = { state:'fresh'|'stale'|'unseen'; sources:{provider:string;checked_at:string;fresh:boolean}[] }
 export type Page<T> = { items:T[]; page:number; page_size:number; total:number; pages:number }
 export type Activity = { id:number; action:string; message:string; details:Record<string, any>; created_at:string }
 export type Health = { status:string; backend:string; database:string; providers:Record<string,{configured:boolean;status:string}> }

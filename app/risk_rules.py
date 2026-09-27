@@ -22,7 +22,7 @@ def assess_evidence(results: list[dict[str, Any]]) -> dict[str, Any]:
         verdict = "suspicious"
         rationale = "At least one intelligence source reported suspicious activity."
         confidence = "medium" if len(adverse) > 1 else "low"
-    elif clean and len(clean) == len(usable):
+    elif usable and clean and len(clean) == len(usable):
         verdict = "clean"
         rationale = "All available reputation sources returned clean findings."
         confidence = "medium" if len(clean) > 1 else "low"

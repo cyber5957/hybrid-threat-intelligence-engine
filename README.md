@@ -10,16 +10,17 @@ Sentinel is a defensive analyst workbench for extracting candidate IOCs from ale
 flowchart LR
   Analyst[Admin browser] -->|X-Admin-Username| UI[React + TypeScript + Tailwind]
   UI -->|REST /api| API[FastAPI]
-  API --> EX[iocextract + validation]
-  API --> DB[(SQLite: alerts, indicators, enrichment, activity)]
-  API --> CACHE[6-hour provider result cache]
-  CACHE --> VT[VirusTotal]
-  CACHE --> AB[AbuseIPDB]
-  CACHE --> OTX[AlienVault OTX]
-  CACHE --> SH[Shodan]
+  API --> EX[IOC extraction and refanging]
+  EX --> KB{Local knowledge cache}
+  KB -->|Fresh findings| RULES[Deterministic risk rules]
+  KB -->|Missing or stale| EXT[External TI and OSINT]
+  EXT --> DB[(SQLite evidence and activity)]
+  DB --> RULES
+  RULES --> ASSESS[Verdict, confidence, rationale]
+  ASSESS --> UI
 ```
 
-The backend uses SQLite for local development and containerized deployments. The storage module can be replaced with a managed database adapter when deploying for multiple analysts. Current username-only admin access is a local development gate, not secure authentication; keep the service bound to localhost.
+The API's SQLite database is the live knowledge cache. Cached provider findings are checked before outbound requests: VirusTotal, AbuseIPDB, and Shodan findings use the `threat_intel_api` freshness window (3 days by default); OTX uses the `osint` window (7 days by default). These values are set in `app/config.py`. Deterministic rules produce the stored verdict and rationale from usable provider findings. LLM explanation is not implemented in this build; it must not be presented as an active stage. Current username-only admin access is a local development gate, not secure authentication; keep the service bound to localhost.
 
 ## Quick start: local development
 

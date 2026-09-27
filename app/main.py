@@ -20,8 +20,9 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 from .database import connect, init_db, record_activity
-from .enrichment import aggregate, enrich_one, provider_status
+from .enrichment import aggregate, enrich_one, provider_status, PROVIDER_FRESHNESS
 from .extraction import extract_indicators
+from .risk_rules import assess_evidence
 
 APP_NAME = "Sentinel Threat Intelligence API"
 ADMIN_USERNAME = os.getenv("SENTINEL_ADMIN_USERNAME", "admin").strip() or "admin"
@@ -200,6 +201,18 @@ def _indicator_query(where: str = "", params: tuple[Any, ...] = (), limit: int =
                 if entry["provider"] not in seen:
                     seen.add(entry["provider"]); providers.append({"provider": entry["provider"], "verdict": entry["verdict"], "risk_score": entry["risk_score"], "metadata": json.loads(entry["metadata"]), "status": entry["status"], "checked_at": entry["checked_at"]})
             item["providers"] = providers
+            item["assessment"] = assess_evidence(providers)
+            now = datetime.now(timezone.utc)
+            freshness = []
+            for result in providers:
+                if result.get("status") == "error" or not result.get("checked_at"):
+                    continue
+                checked = datetime.fromisoformat(result["checked_at"].replace("Z", "+00:00"))
+                if checked.tzinfo is None:
+                    checked = checked.replace(tzinfo=timezone.utc)
+                age = now - checked
+                freshness.append({"provider": result["provider"], "checked_at": result["checked_at"], "fresh": age <= PROVIDER_FRESHNESS.get(result["provider"], timedelta(days=7))})
+            item["knowledge_cache"] = {"state": "fresh" if any(source["fresh"] for source in freshness) else "stale" if freshness else "unseen", "sources": freshness}
             result.append(item)
     return result, total
 

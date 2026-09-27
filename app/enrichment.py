@@ -6,20 +6,27 @@ import base64
 import hashlib
 import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote
 
 import httpx
 
 from .database import connect
+from .config import default_freshness, source_freshness
+from .risk_rules import assess_evidence
 
-CACHE_TTL = timedelta(hours=6)
 PROVIDER_KEYS = {
     "virustotal": "VIRUSTOTAL_API_KEY", "abuseipdb": "ABUSEIPDB_API_KEY",
     "otx": "OTX_API_KEY", "shodan": "SHODAN_API_KEY",
 }
 RATE_INTERVAL_SECONDS = {"virustotal": 15.0, "abuseipdb": 1.0, "otx": 1.0, "shodan": 1.0}
+PROVIDER_FRESHNESS = {
+    "virustotal": source_freshness.get("threat_intel_api", default_freshness),
+    "abuseipdb": source_freshness.get("threat_intel_api", default_freshness),
+    "shodan": source_freshness.get("threat_intel_api", default_freshness),
+    "otx": source_freshness.get("osint", default_freshness),
+}
 _provider_locks = {name: asyncio.Semaphore(2) for name in PROVIDER_KEYS}
 _provider_rate_locks = {name: asyncio.Lock() for name in PROVIDER_KEYS}
 _provider_last_request: dict[str, float] = {}
@@ -106,10 +113,19 @@ async def _request(provider: str, ioc_type: str, value: str) -> dict[str, Any] |
 
 
 def _cached(ioc_id: int, cache_key: str) -> list[dict[str, Any]]:
-    cutoff = (datetime.now(timezone.utc) - CACHE_TTL).isoformat()
     with connect() as db:
-        rows = db.execute("SELECT provider,verdict,risk_score,metadata FROM enrichment_results WHERE indicator_id=? AND cache_key=? AND status<>'error' AND checked_at>=? ORDER BY id DESC", (ioc_id, cache_key, cutoff)).fetchall()
-    return [{"provider": r["provider"], "verdict": r["verdict"], "risk_score": r["risk_score"], "metadata": json.loads(r["metadata"]), "status": "cached"} for r in rows]
+        rows = db.execute("SELECT provider,verdict,risk_score,metadata,checked_at FROM enrichment_results WHERE indicator_id=? AND cache_key=? AND status<>'error' ORDER BY id DESC", (ioc_id, cache_key)).fetchall()
+    latest: dict[str, Any] = {}
+    now = datetime.now(timezone.utc)
+    for row in rows:
+        if row["provider"] in latest:
+            continue
+        checked = datetime.fromisoformat(row["checked_at"].replace("Z", "+00:00"))
+        if checked.tzinfo is None:
+            checked = checked.replace(tzinfo=timezone.utc)
+        if now - checked <= PROVIDER_FRESHNESS.get(row["provider"], default_freshness):
+            latest[row["provider"]] = {"provider": row["provider"], "verdict": row["verdict"], "risk_score": row["risk_score"], "metadata": json.loads(row["metadata"]), "status": "cached", "checked_at": row["checked_at"]}
+    return list(latest.values())
 
 
 async def enrich_one(ioc_id: int, ioc_type: str, value: str) -> list[dict[str, Any]]:
@@ -129,12 +145,5 @@ async def enrich_one(ioc_id: int, ioc_type: str, value: str) -> list[dict[str, A
 
 
 def aggregate(results: list[dict[str, Any]]) -> tuple[str, int | None]:
-    usable = [r for r in results if r.get("status") != "error"]
-    if not usable: return "unknown", None
-    verdicts = [r["verdict"] for r in usable]
-    scores = [int(r["risk_score"]) for r in usable if r.get("risk_score") is not None]
-    score = max(scores) if scores else None
-    if "malicious" in verdicts: return "malicious", score
-    if "suspicious" in verdicts: return "suspicious", score
-    if all(v == "clean" for v in verdicts): return "clean", score
-    return "unknown", None
+    assessment = assess_evidence(results)
+    return assessment["verdict"], assessment["risk_score"]
