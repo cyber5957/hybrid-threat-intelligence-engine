@@ -1,0 +1,51 @@
+test_id,url,expected_category,notes
+TC001,https://example.com,Safe,Benign test URL
+TC002,http://example.com,Safe,Benign test URL
+TC003,http://192.168.1.10/login,Suspicious,IP address instead of domain
+TC004,http://example.com/login.php?redirect=http://192.168.1.10,Suspicious,Redirect parameter
+TC005,http://malware-download.example,Malicious,Demo placeholder only
+TC006,https://google.com,Safe,Known benign domain example
+TC007,https://github.com,Safe,Known benign domain example
+TC008,https://www.wikipedia.org,Safe,Known benign domain example
+TC009,https://www.microsoft.com,Safe,Known benign domain example
+TC010,https://www.python.org,Safe,Known benign domain example
+TC011,http://10.0.0.5/login,Suspicious,Private IP address
+TC012,http://172.16.0.25/admin,Suspicious,Private IP address
+TC013,http://192.168.0.50/update,Suspicious,Private IP address
+TC014,http://example.com/login?redirect=192.168.1.1,Suspicious,Redirect parameter
+TC015,http://example.com/download.php?file=update.exe,Suspicious,Executable download parameter
+TC016,http://example.com/verify-account,Suspicious,Account verification path
+TC017,http://example.com/free-prize,Suspicious,Suspicious-looking path
+TC018,http://example.com/urgent-login,Suspicious,Urgent login path
+TC019,http://example.com/update-account,Suspicious,Account update path
+TC020,http://example.com/secure-login,Suspicious,Login-related path
+TC021,http://192.0.2.1/malware.exe,Malicious,Synthetic test URL only
+TC022,http://198.51.100.5/payload.exe,Malicious,Synthetic test URL only
+TC023,http://203.0.113.10/dropper.exe,Malicious,Synthetic test URL only
+TC024,http://198.51.100.20/malicious-file.zip,Malicious,Synthetic test URL only
+TC025,http://203.0.113.50/payload.bin,Malicious,Synthetic test URL only
+TC026,https://www.apple.com,Safe,Known benign domain example
+TC027,https://www.amazon.com,Safe,Known benign domain example
+TC028,https://www.adobe.com,Safe,Known benign domain example
+TC029,https://www.nasa.gov,Safe,Known benign domain example
+TC030,https://www.mozilla.org,Safe,Known benign domain example
+TC031,https://stackoverflow.com,Safe,Known benign domain example
+TC032,https://www.w3.org,Safe,Known benign domain example
+TC033,http://10.10.10.10/password,Suspicious,Private IP address
+TC034,http://172.20.10.5/login,Suspicious,Private IP address
+TC035,http://192.168.10.20/account,Suspicious,Private IP address
+TC036,http://example.com/reset-password,Suspicious,Password reset path
+TC037,http://example.com/confirm-payment,Suspicious,Payment-related path
+TC038,http://example.com/account-verify,Suspicious,Account verification path
+TC039,http://example.com/security-alert,Suspicious,Security alert path
+TC040,http://example.com/claim-reward,Suspicious,Reward-related path
+TC041,http://example.com/download/update.exe,Suspicious,Executable download path
+TC042,http://example.com/login/verify,Suspicious,Login verification path
+TC043,http://192.0.2.10/trojan.exe,Malicious,Synthetic test URL only
+TC044,http://198.51.100.10/ransomware.bin,Malicious,Synthetic test URL only
+TC045,http://203.0.113.20/backdoor.exe,Malicious,Synthetic test URL only
+TC046,http://192.0.2.25/dropper.zip,Malicious,Synthetic test URL only
+TC047,http://198.51.100.30/botnet.exe,Malicious,Synthetic test URL only
+TC048,http://203.0.113.40/loader.bin,Malicious,Synthetic test URL only
+TC049,http://192.0.2.50/virus.exe,Malicious,Synthetic test URL only
+TC050,http://198.51.100.60/payload.zip,Malicious,Synthetic test URL only
